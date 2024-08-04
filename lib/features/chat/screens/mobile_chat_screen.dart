@@ -58,7 +58,7 @@ class MobileChatScreen extends ConsumerWidget {
           Expanded(child: ChatList()),
           Container(
             padding: const EdgeInsets.all(8),
-            child: BottomChatField(),
+            child: BottomChatField(receiverUserID: uid,),
           )
         ],
       ),

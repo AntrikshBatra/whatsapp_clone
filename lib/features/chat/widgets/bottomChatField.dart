@@ -1,17 +1,36 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:whatsapp_clone/colors.dart';
+import 'package:whatsapp_clone/features/chat/controller/chatController.dart';
 
-class BottomChatField extends StatefulWidget {
-  const BottomChatField({
-    super.key,
-  });
+class BottomChatField extends ConsumerStatefulWidget {
+  final String receiverUserID;
+  const BottomChatField({super.key, required this.receiverUserID});
 
   @override
-  State<BottomChatField> createState() => _BottomChatFieldState();
+  ConsumerState<BottomChatField> createState() => _BottomChatFieldState();
 }
 
-class _BottomChatFieldState extends State<BottomChatField> {
+class _BottomChatFieldState extends ConsumerState<BottomChatField> {
   bool showSendButton = false;
+  final TextEditingController _messageController = TextEditingController();
+
+  void SendTextMessage() async {
+    if (showSendButton) {
+      ref.read(ChatControllerProvider).sendTextMessage(
+          context, _messageController.text.trim(), widget.receiverUserID);
+    }
+    setState(() {
+      _messageController.text = '';
+    });
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    _messageController.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -19,6 +38,7 @@ class _BottomChatFieldState extends State<BottomChatField> {
       children: [
         Expanded(
           child: TextFormField(
+            controller: _messageController,
             onChanged: (val) {
               if (val.isNotEmpty) {
                 setState(() {
@@ -92,10 +112,13 @@ class _BottomChatFieldState extends State<BottomChatField> {
           child: CircleAvatar(
             backgroundColor: Color(0xFF128C7E),
             radius: 28,
-            child: Icon(
-              showSendButton ? Icons.send : Icons.mic,
-              color: Colors.white,
-              size: 30,
+            child: GestureDetector(
+              onTap: SendTextMessage,
+              child: Icon(
+                showSendButton ? Icons.send : Icons.mic,
+                color: Colors.white,
+                size: 30,
+              ),
             ),
           ),
         )
